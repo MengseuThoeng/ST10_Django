@@ -6,6 +6,7 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    # products = models.ManyToManyField('Products', related_name='products', blank=True)
 
     class Meta:
         db_table = 'category'
@@ -18,7 +19,7 @@ class Products(models.Model):
     name = models.CharField(max_length=100)
     price = models.FloatField()
     qty = models.IntegerField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    categories = models.ManyToManyField(Category, related_name='products', blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     is_delete = models.BooleanField(default=False)
 
