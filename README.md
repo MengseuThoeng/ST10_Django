@@ -1,59 +1,76 @@
-### 1. បង្កើត Virtual Environment (venv)  
+# 🛒 Django Store Project
 
-```
+A basic Django project with a product store page and MySQL database.
 
-python -m venv venv
+---
 
-```
+## ⚙️ Project Automation + MySQL Cleanup (Windows Only)
 
+### 1️⃣ Create Virtual Environment
 
-### 2. បើក Command Prompt (CMD)  
+    python -m venv venv
 
-- ប្រសិនបើអ្នកនៅក្នុង PowerShell ឬ Terminal ផ្សេងៗ សូមបើក **CMD** មុនសិន។  
+---
 
+### 2️⃣ Activate venv & Install Dependencies
 
-### 3. ធ្វើឲ្យ venv សកម្ម  
+    venv\Scripts\activate
+    pip install -r requirements.txt
 
-**Windows:**  
+---
 
-```
+### 3️⃣ Open WAMP & MySQL Workbench
 
-venv\Scripts\activate
+- 🚀 Start WAMP (click the WAMP icon)
+- 🧠 Open MySQL Workbench
 
-```
+---
 
-**Mac/Linux:**  
+### 4️⃣ Clean `ecommerce` Database (Drop All Tables)
 
-```
+In MySQL Workbench, run:
 
-source venv/bin/activate
+    USE ecommerce;
 
-```
+    SET FOREIGN_KEY_CHECKS = 0;
 
+    SET @tables = NULL;
+    SELECT GROUP_CONCAT('`', table_name, '`') INTO @tables
+    FROM information_schema.tables
+    WHERE table_schema = 'ecommerce';
 
-### 4. តំឡើង Django  
+    SET @tables = IFNULL(@tables, 'dummy');
+    SET @del_stmt = CONCAT('DROP TABLE IF EXISTS ', @tables);
+    PREPARE stmt FROM @del_stmt;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 
-```
+    SET FOREIGN_KEY_CHECKS = 1;
 
-pip install django
+✅ This removes all tables in the `ecommerce` database.
 
-```
+---
 
+### 5️⃣ Run the Project Automatically
 
-### 5. រត់ Django  
+Just run:
 
-```
+    run_project.bat
 
-python manage.py runserver
+This will:
+- ✅ Activate venv
+- 🔄 Run makemigrations
+- 📦 Run migrate
+- 🎒 Collect static files
+- 🚀 Start the dev server
 
-```
+---
 
+### 🌐 Access the API
 
-### 6. បើក Browser និងចូលទៅកាន់  
+- http://127.0.0.1:8000/store/
+---
 
-- [127.0.0.1:8000/store/](http://127.0.0.1:8000/store/)  
+### ✅ Done!
 
-- [127.0.0.1:8000/store/product](http://127.0.0.1:8000/store/product)  
-
-
-🎉 ជាស្រេច! Django របស់អ្នកដំណើរការរួចហើយ!
+Your Django project is live — let's build bro! 💻🔥
