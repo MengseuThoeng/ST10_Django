@@ -2,21 +2,49 @@ from django.db.models import Count
 # from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Products, Category, Orders
-from .serializers import ProductSerializer, CategorySerializer, OrderSerializer
+from .models import Products, Category, Orders, Payment
+from .serializers import ProductSerializer, CategorySerializer, OrderSerializer, PaymentSerializer
+
+
+class PaymentViewSet(ModelViewSet):
+    queryset = Payment.objects.all()  # <--- add this!
+    serializer_class = PaymentSerializer
+
+    def get_queryset(self):
+        return Payment.objects.filter(order_id=self.kwargs['order_pk'])
+
+    def perform_create(self, serializer):
+        serializer.save(order_id=self.kwargs['order_pk'])
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Products.objects.annotate(
-        order_count = Count('orders')
-    )
+    queryset = Products.objects.all()
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        # 1. For nested router: /categories/<category_pk>/products/
+        category_pk = self.kwargs.get('category_pk')
+        # 2. For query param: /products?category=1
+        category_id = self.request.query_params.get('category', None)
+
+        qs = Products.objects.annotate(order_count=Count('orders'))
+
+        # Priority: nested router > query param
+        if category_pk is not None:
+            qs = qs.filter(categories=category_pk)
+        elif category_id is not None:
+            qs = qs.filter(categories=category_id)
+        return qs
+
+
+
 
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.annotate(
-        product_count = Count('products')
+        product_count=Count('products')
     )
     serializer_class = CategorySerializer
+
 
 class OrderViewSet(ModelViewSet):
     queryset = Orders.objects.all()

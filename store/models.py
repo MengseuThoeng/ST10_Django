@@ -46,3 +46,18 @@ class Orders(models.Model):
 
     def __str__(self):
         return f"{self.qty} - ${self.is_deleted} - {self.product.name}"
+
+
+class Payment(models.Model):
+    order = models.OneToOneField(Orders, on_delete=models.CASCADE, related_name='payment')
+    method = models.CharField(max_length=50)  # e.g. 'Credit Card', 'Cash', 'ABA Pay'
+    amount = models.FloatField()
+    is_paid = models.BooleanField(default=False)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'payment'
+
+    def __str__(self):
+        return f"Payment for Order #{self.order.id} - ${self.amount} - {self.method}"
+

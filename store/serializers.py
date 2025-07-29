@@ -1,11 +1,17 @@
 from rest_framework import serializers
 
-from store.models import Category, Products, Orders
+from store.models import Category, Products, Orders, Payment
 
 # class CategorySerializer(serializers.Serializer):
 #     name = serializers.CharField(max_length=100)
 #     description = serializers.CharField(max_length=200)
 #     product_count = serializers.IntegerField(read_only=True)
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ('id', 'method', 'amount', 'is_paid', 'paid_at')
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
