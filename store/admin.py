@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from store.models import Orders, Products, Category
+from store.models import Orders, Products, Category, UserProfile
+from store.forms import UserProfileAdminForm
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    form = UserProfileAdminForm
+    list_display = ('user', 'phone', 'address', 'city', 'state', 'zipcode')
+    list_editable = ('phone', 'address', 'city', 'state', 'zipcode')
+
 
 
 # Register your models here.
