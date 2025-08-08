@@ -149,52 +149,36 @@ if /i not "%ready%"=="y" (
     pause
     exit /b 1
 )
-echo ✅ Great! Proceeding with MySQL setup...
+echo ✅ Great! Proceeding with setup...
 echo.
 
-REM Create ecommerce database if it doesn't exist
-echo 🗄️ Setting up 'ecommerce' database...
-echo 💡 Creating database and cleaning tables for fresh start...
-python -c "
-import mysql.connector
-try:
-    # Connect to MySQL server
-    conn = mysql.connector.connect(host='localhost', user='root', password='')
-    cursor = conn.cursor()
-    
-    # Create database if it doesn't exist
-    cursor.execute('CREATE DATABASE IF NOT EXISTS ecommerce')
-    print('✅ ecommerce database ready')
-    
-    # Switch to ecommerce database
-    cursor.execute('USE ecommerce')
-    
-    # Clean existing tables for fresh start
-    cursor.execute('SET FOREIGN_KEY_CHECKS = 0')
-    cursor.execute('SHOW TABLES')
-    tables = cursor.fetchall()
-    for table in tables:
-        cursor.execute(f'DROP TABLE IF EXISTS {table[0]}')
-    cursor.execute('SET FOREIGN_KEY_CHECKS = 1')
-    
-    conn.commit()
-    conn.close()
-    print('✅ Database cleaned for fresh setup')
-    
-except Exception as e:
-    print(f'❌ Database setup failed: {e}')
-    print('💡 Please check if WAMP/MySQL is running properly')
-    exit(1)
-"
-if %errorlevel% neq 0 (
+echo 🗄️ Database Setup Instructions:
+echo.
+echo ⚠️  PLEASE CREATE 'ecommerce' DATABASE MANUALLY:
+echo    1. Open phpMyAdmin (http://localhost/phpmyadmin)
+echo    2. OR open MySQL Workbench
+echo    3. Create database: CREATE DATABASE ecommerce;
+echo    4. Make sure it's empty (no tables)
+echo.
+echo 💡 Why manual setup?
+echo    • Ensures you have proper MySQL access
+echo    • Avoids connection issues during setup
+echo    • Gives you control over database creation
+echo.
+set /p db_ready="Have you created the 'ecommerce' database? (y/n): "
+if /i not "%db_ready%"=="y" (
     echo.
-    echo 🛑 Database setup failed. Please ensure:
-    echo    • WAMP is running with GREEN icon
-    echo    • MySQL service is started
-    echo    • No firewall blocking MySQL
+    echo 🛑 Please create the 'ecommerce' database first.
+    echo 📋 Steps:
+    echo    1. Open phpMyAdmin: http://localhost/phpmyadmin
+    echo    2. Click "New" on the left side
+    echo    3. Database name: ecommerce
+    echo    4. Click "Create"
+    echo    5. Then run this script again
     pause
     exit /b 1
 )
+echo ✅ Great! Database is ready. Continuing with migrations...
 echo.
 
 REM Create fresh migrations
