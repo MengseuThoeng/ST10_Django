@@ -57,56 +57,24 @@ if %errorlevel% neq 0 (
 echo ✅ Python is installed and available.
 echo.
 
-REM Check if MySQL/WAMP is running
-echo 🔍 Checking MySQL connection...
-python -c "
-import sys
-try:
-    import mysql.connector
-    conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='',
-        port=3306
-    )
-    conn.close()
-    print('MySQL connection successful!')
-    sys.exit(0)
-except ImportError:
-    print('WARNING: mysql-connector-python not installed yet')
-    sys.exit(1)
-except mysql.connector.Error as e:
-    print(f'MySQL Error: {e}')
-    sys.exit(1)
-except Exception as e:
-    print(f'Connection Error: {e}')
-    sys.exit(1)
-" 2>nul
-if %errorlevel% neq 0 (
-    echo ❌ MySQL connection failed!
-    echo.
-    echo 🔧 Please ensure WAMP/MySQL is running:
-    echo    1. Start WAMP server (wait for GREEN icon)
-    echo    2. Make sure MySQL service is running
-    echo    3. Verify 'ecommerce' database exists
-    echo    4. Test connection in MySQL Workbench
-    echo.
-    echo 💡 Quick fixes:
-    echo    • Restart WAMP services
-    echo    • Check WAMP → MySQL → Service administration
-    echo    • Verify port 3306 is not blocked
-    echo.
-    set /p continue="Continue anyway? (not recommended) (y/n): "
-    if /i not "%continue%"=="y" (
-        echo 🛑 Setup cancelled. Please start MySQL and try again.
-        echo 💡 This project requires MySQL database to function properly.
-        pause
-        exit /b 1
-    )
-    echo ⚠️  Continuing without MySQL verification... (may cause errors)
-) else (
-    echo ✅ MySQL connection verified.
+REM MySQL Setup Alert
+echo 🔍 MySQL Setup Check...
+echo.
+echo ⚠️  IMPORTANT: Ensure WAMP/MySQL is running!
+echo    ✅ WAMP Server should be running (GREEN icon)
+echo    ✅ MySQL service should be started
+echo.
+echo 💡 If WAMP is not running:
+echo    • Click WAMP icon in system tray
+echo    • Wait for it to turn GREEN
+echo.
+set /p mysql_ready="Is WAMP/MySQL running? (y/n): "
+if /i not "%mysql_ready%"=="y" (
+    echo 🛑 Please start WAMP/MySQL first, then run this script again.
+    pause
+    exit /b 1
 )
+echo ✅ Great! Continuing with project startup...
 echo.
 
 REM Create virtual environment if it doesn't exist

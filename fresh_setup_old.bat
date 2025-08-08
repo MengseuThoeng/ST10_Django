@@ -129,72 +129,144 @@ echo ============================================================
 echo 🗄️ MYSQL DATABASE SETUP
 echo ============================================================
 
-echo ⚠️  IMPORTANT: MySQL Setup Required!
-echo.
-echo 🔧 Before continuing, please ensure:
-echo    ✅ WAMP Server is running (GREEN icon)
-echo    ✅ MySQL service is started
-echo    ✅ You can access phpMyAdmin or MySQL Workbench
-echo.
-echo 💡 Quick WAMP startup:
-echo    1. Click WAMP icon in system tray
-echo    2. Wait for icon to turn GREEN
-echo    3. Left-click WAMP → MySQL → Service administration → Start Service
-echo.
-set /p ready="WAMP/MySQL is ready and running? (y/n): "
-if /i not "%ready%"=="y" (
+REM Check MySQL connection (required)
+echo 🔍 Checking MySQL connection...
+python -c "
+import sys
+try:
+    import mysql.connector
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        port=3306
+    )
+    conn.close()
+    print('MySQL connection successful!')
+    sys.exit(0)
+except ImportError:
+    print('ERROR: mysql-connector-python not installed')
+    sys.exit(1)
+except mysql.connector.Error as e:
+    print(f'MySQL Error: {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'Connection Error: {e}')
+    sys.exit(1)
+"
+if %errorlevel% neq 0 (
     echo.
-    echo 🛑 Please start WAMP/MySQL first, then run this script again.
-    echo 📋 Need help? Check SETUP_GUIDE.md for detailed instructions.
-    pause
-    exit /b 1
+    echo ❌ MySQL connection failed!
+    echo.
+    echo 🔧 Please check the following:
+    echo    1. WAMP Server is running (icon should be GREEN)
+    echo    2. MySQL service is started in WAMP
+    echo    3. MySQL is running on port 3306
+    echo    4. No other MySQL instances are running
+    echo.
+    echo �️ How to fix:
+    echo    • Left-click WAMP icon → MySQL → Service administration → Start/Resume Service
+    echo    • Or restart all WAMP services
+    echo    • Check Windows Services for 'wampmysqld' or 'MySQL' service
+    echo.
+    echo 🔍 Alternative test:
+    echo    • Open MySQL Workbench
+    echo    • Try connecting to localhost:3306, user: root, password: (empty)
+    echo.
+    set /p retry="Would you like to try again? (y/n): "
+    if /i "%retry%"=="y" (
+        echo.
+        echo 🔄 Testing MySQL connection again...
+        python -c "
+import sys
+try:
+    import mysql.connector
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        port=3306
+    )
+    conn.close()
+    print('✅ MySQL connection successful!')
+    sys.exit(0)
+except Exception as e:
+    print(f'❌ Still failed: {e}')
+    sys.exit(1)
+"
+        if %errorlevel% neq 0 (
+            echo.
+            echo 💡 Troubleshooting tips:
+            echo    • Try restarting WAMP completely
+            echo    • Check if port 3306 is blocked by firewall
+            echo    • Verify MySQL password (should be empty for WAMP)
+            echo    • Check WAMP logs for MySQL errors
+            echo.
+            echo 🛑 Cannot proceed without MySQL. Please fix and run this script again.
+            pause
+            exit /b 1
+        )
+    ) else (
+        echo.
+        echo 🛑 MySQL is required for this project. Setup cancelled.
+        echo 💡 Please start WAMP Server and ensure MySQL is running.
+        pause
+        exit /b 1
+    )
 )
-echo ✅ Great! Proceeding with MySQL setup...
+echo ✅ MySQL connection verified!
 echo.
 
-REM Create ecommerce database if it doesn't exist
-echo 🗄️ Setting up 'ecommerce' database...
-echo 💡 Creating database and cleaning tables for fresh start...
+REM Check if ecommerce database exists
+echo 🗄️ Checking 'ecommerce' database...
+python -c "import mysql.connector; conn = mysql.connector.connect(host='localhost', user='root', password=''); cursor = conn.cursor(); cursor.execute('SHOW DATABASES LIKE \"ecommerce\"'); result = cursor.fetchone(); conn.close(); exit(0 if result else 1)" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo 📝 'ecommerce' database not found. Creating it...
+    python -c "import mysql.connector; conn = mysql.connector.connect(host='localhost', user='root', password=''); cursor = conn.cursor(); cursor.execute('CREATE DATABASE IF NOT EXISTS ecommerce'); conn.commit(); conn.close(); print('Database created successfully')"
+    if %errorlevel% neq 0 (
+        echo ❌ Failed to create 'ecommerce' database!
+        echo 🔧 Please create it manually in MySQL Workbench:
+        echo    CREATE DATABASE ecommerce;
+        pause
+        exit /b 1
+    )
+    echo ✅ 'ecommerce' database created successfully.
+) else (
+    echo ✅ 'ecommerce' database already exists.
+)
+echo.
+
+REM Clean existing tables in ecommerce database
+echo 🧹 Cleaning existing tables in 'ecommerce' database...
+echo 💡 This ensures a completely fresh start...
 python -c "
 import mysql.connector
 try:
-    # Connect to MySQL server
-    conn = mysql.connector.connect(host='localhost', user='root', password='')
+    conn = mysql.connector.connect(host='localhost', user='root', password='', database='ecommerce')
     cursor = conn.cursor()
     
-    # Create database if it doesn't exist
-    cursor.execute('CREATE DATABASE IF NOT EXISTS ecommerce')
-    print('✅ ecommerce database ready')
-    
-    # Switch to ecommerce database
-    cursor.execute('USE ecommerce')
-    
-    # Clean existing tables for fresh start
+    # Disable foreign key checks
     cursor.execute('SET FOREIGN_KEY_CHECKS = 0')
+    
+    # Get all tables
     cursor.execute('SHOW TABLES')
     tables = cursor.fetchall()
+    
+    # Drop all tables
     for table in tables:
         cursor.execute(f'DROP TABLE IF EXISTS {table[0]}')
+        print(f'Dropped table: {table[0]}')
+    
+    # Re-enable foreign key checks
     cursor.execute('SET FOREIGN_KEY_CHECKS = 1')
     
     conn.commit()
     conn.close()
-    print('✅ Database cleaned for fresh setup')
-    
+    print('All tables cleaned successfully!')
 except Exception as e:
-    print(f'❌ Database setup failed: {e}')
-    print('💡 Please check if WAMP/MySQL is running properly')
-    exit(1)
+    print(f'Note: {e}')
 "
-if %errorlevel% neq 0 (
-    echo.
-    echo 🛑 Database setup failed. Please ensure:
-    echo    • WAMP is running with GREEN icon
-    echo    • MySQL service is started
-    echo    • No firewall blocking MySQL
-    pause
-    exit /b 1
-)
+echo ✅ Database tables cleaned.
 echo.
 
 REM Create fresh migrations
@@ -268,7 +340,7 @@ echo.
 echo 📚 What's been set up:
 echo    ✅ Fresh virtual environment
 echo    ✅ All dependencies installed
-echo    ✅ Clean MySQL database with schema
+echo    ✅ Clean database with schema
 echo    ✅ Admin user account
 echo    ✅ Sample data for testing
 echo    ✅ Static files collected

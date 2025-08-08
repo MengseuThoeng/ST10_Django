@@ -83,26 +83,21 @@ run_project.bat
 
 ### For New Users/Fresh Clone:
 ```
-1. Run: test_mysql.bat (verify MySQL first)
+1. Ensure WAMP is running (GREEN icon)
 2. Run: fresh_setup.bat (complete setup)
 3. Then use: run_project.bat (daily development)
 ```
 
 ### For Existing Users:
 ```
-Just run: run_project.bat
-```
-
-### For MySQL Issues:
-```
-1. Run: test_mysql.bat (diagnose problems)
-2. Follow the troubleshooting guide
-3. Then run: fresh_setup.bat or run_project.bat
+1. Ensure WAMP is running (GREEN icon) 
+2. Run: run_project.bat
 ```
 
 ### For Troubleshooting:
 ```
-If you have any issues: test_mysql.bat → fresh_setup.bat
+1. Ensure WAMP is running
+2. Run: fresh_setup.bat (resets everything)
 ```
 
 ## 🛠️ Manual Commands (Alternative)
