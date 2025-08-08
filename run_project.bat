@@ -59,14 +59,42 @@ echo.
 
 REM Check if MySQL/WAMP is running
 echo 🔍 Checking MySQL connection...
-python -c "import mysql.connector; mysql.connector.connect(host='localhost', user='root', password='')" >nul 2>&1
+python -c "
+import sys
+try:
+    import mysql.connector
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        port=3306
+    )
+    conn.close()
+    print('MySQL connection successful!')
+    sys.exit(0)
+except ImportError:
+    print('WARNING: mysql-connector-python not installed yet')
+    sys.exit(1)
+except mysql.connector.Error as e:
+    print(f'MySQL Error: {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'Connection Error: {e}')
+    sys.exit(1)
+" 2>nul
 if %errorlevel% neq 0 (
     echo ❌ MySQL connection failed!
+    echo.
     echo 🔧 Please ensure WAMP/MySQL is running:
-    echo    1. Start WAMP server (wait for green icon)
+    echo    1. Start WAMP server (wait for GREEN icon)
     echo    2. Make sure MySQL service is running
     echo    3. Verify 'ecommerce' database exists
     echo    4. Test connection in MySQL Workbench
+    echo.
+    echo 💡 Quick fixes:
+    echo    • Restart WAMP services
+    echo    • Check WAMP → MySQL → Service administration
+    echo    • Verify port 3306 is not blocked
     echo.
     set /p continue="Continue anyway? (not recommended) (y/n): "
     if /i not "%continue%"=="y" (
@@ -75,9 +103,9 @@ if %errorlevel% neq 0 (
         pause
         exit /b 1
     )
-    echo ⚠️  Continuing without MySQL verification...
+    echo ⚠️  Continuing without MySQL verification... (may cause errors)
 ) else (
-    echo ✅ MySQL connection successful.
+    echo ✅ MySQL connection verified.
 )
 echo.
 

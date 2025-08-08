@@ -1,6 +1,6 @@
 # 🚀 Setup Scripts Guide - MySQL E-Commerce Project
 
-This Django E-Commerce project is designed to work with **MySQL database only**. Both setup scripts ensure proper MySQL configuration.
+This### 4. `run_project.bat` - For Regular DevelopmentDjango E-Commerce project is designed to work with **MySQL database only**. Both setup scripts ensure proper MySQL configuration.
 
 ## 📋 Prerequisites
 
@@ -12,7 +12,28 @@ This Django E-Commerce project is designed to work with **MySQL database only**.
 
 ## 📁 Available Scripts
 
-### 1. `fresh_setup.bat` - For Brand New Setup
+### 1. `test_mysql.bat` - MySQL Diagnostic Tool 🆕
+**🎯 Use this when:**
+- Having MySQL connection issues
+- Want to verify MySQL setup before running main scripts
+- Need to troubleshoot database problems
+- First time setting up the project
+
+**✨ What it does:**
+- 🔍 **Tests MySQL connection with detailed output**
+- 📊 **Shows MySQL version and available databases**
+- 🗄️ **Checks if 'ecommerce' database exists**
+- 📋 **Lists all tables in the database**
+- 🛠️ **Provides step-by-step troubleshooting guide**
+- 💡 **Installs mysql-connector-python if missing**
+
+**⚡ Quick Start:**
+```bash
+# Run this FIRST if you have MySQL issues
+test_mysql.bat
+```
+
+### 2. `fresh_setup.bat` - For Brand New Setup
 **🎯 Use this when:**
 - You just cloned the project for the first time
 - You want to completely reset everything
@@ -62,8 +83,9 @@ run_project.bat
 
 ### For New Users/Fresh Clone:
 ```
-1. Run: fresh_setup.bat (first time only)
-2. Then use: run_project.bat (for daily development)
+1. Run: test_mysql.bat (verify MySQL first)
+2. Run: fresh_setup.bat (complete setup)
+3. Then use: run_project.bat (daily development)
 ```
 
 ### For Existing Users:
@@ -71,9 +93,16 @@ run_project.bat
 Just run: run_project.bat
 ```
 
+### For MySQL Issues:
+```
+1. Run: test_mysql.bat (diagnose problems)
+2. Follow the troubleshooting guide
+3. Then run: fresh_setup.bat or run_project.bat
+```
+
 ### For Troubleshooting:
 ```
-If you have issues: fresh_setup.bat (resets everything)
+If you have any issues: test_mysql.bat → fresh_setup.bat
 ```
 
 ## 🛠️ Manual Commands (Alternative)

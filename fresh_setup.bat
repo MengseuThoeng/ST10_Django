@@ -131,35 +131,90 @@ echo ============================================================
 
 REM Check MySQL connection (required)
 echo 🔍 Checking MySQL connection...
-python -c "import mysql.connector; mysql.connector.connect(host='localhost', user='root', password='')" >nul 2>&1
+python -c "
+import sys
+try:
+    import mysql.connector
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        port=3306
+    )
+    conn.close()
+    print('MySQL connection successful!')
+    sys.exit(0)
+except ImportError:
+    print('ERROR: mysql-connector-python not installed')
+    sys.exit(1)
+except mysql.connector.Error as e:
+    print(f'MySQL Error: {e}')
+    sys.exit(1)
+except Exception as e:
+    print(f'Connection Error: {e}')
+    sys.exit(1)
+"
 if %errorlevel% neq 0 (
+    echo.
     echo ❌ MySQL connection failed!
-    echo 🔧 Please ensure the following:
-    echo    1. WAMP Server is running (green icon)
-    echo    2. MySQL service is started
-    echo    3. MySQL is running on localhost:3306
-    echo    4. Root user has no password (default WAMP setup)
     echo.
-    echo 💡 To fix this:
-    echo    • Start WAMP (click the WAMP icon)
-    echo    • Wait for it to turn green
-    echo    • Open MySQL Workbench to test connection
+    echo 🔧 Please check the following:
+    echo    1. WAMP Server is running (icon should be GREEN)
+    echo    2. MySQL service is started in WAMP
+    echo    3. MySQL is running on port 3306
+    echo    4. No other MySQL instances are running
     echo.
-    set /p retry="Try MySQL connection again? (y/n): "
+    echo �️ How to fix:
+    echo    • Left-click WAMP icon → MySQL → Service administration → Start/Resume Service
+    echo    • Or restart all WAMP services
+    echo    • Check Windows Services for 'wampmysqld' or 'MySQL' service
+    echo.
+    echo 🔍 Alternative test:
+    echo    • Open MySQL Workbench
+    echo    • Try connecting to localhost:3306, user: root, password: (empty)
+    echo.
+    set /p retry="Would you like to try again? (y/n): "
     if /i "%retry%"=="y" (
-        python -c "import mysql.connector; mysql.connector.connect(host='localhost', user='root', password='')" >nul 2>&1
+        echo.
+        echo 🔄 Testing MySQL connection again...
+        python -c "
+import sys
+try:
+    import mysql.connector
+    conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        port=3306
+    )
+    conn.close()
+    print('✅ MySQL connection successful!')
+    sys.exit(0)
+except Exception as e:
+    print(f'❌ Still failed: {e}')
+    sys.exit(1)
+"
         if %errorlevel% neq 0 (
-            echo ❌ MySQL still not available. Please fix MySQL and run this script again.
+            echo.
+            echo 💡 Troubleshooting tips:
+            echo    • Try restarting WAMP completely
+            echo    • Check if port 3306 is blocked by firewall
+            echo    • Verify MySQL password (should be empty for WAMP)
+            echo    • Check WAMP logs for MySQL errors
+            echo.
+            echo 🛑 Cannot proceed without MySQL. Please fix and run this script again.
             pause
             exit /b 1
         )
     ) else (
+        echo.
         echo 🛑 MySQL is required for this project. Setup cancelled.
+        echo 💡 Please start WAMP Server and ensure MySQL is running.
         pause
         exit /b 1
     )
 )
-echo ✅ MySQL connection successful!
+echo ✅ MySQL connection verified!
 echo.
 
 REM Check if ecommerce database exists
