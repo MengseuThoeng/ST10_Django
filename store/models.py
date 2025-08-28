@@ -10,12 +10,18 @@ class UserProfile(models.Model):
     city = models.CharField(max_length=255,blank=True)
     state = models.CharField(max_length=255,blank=True)
     zipcode = models.CharField(max_length=20,blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True)
 
     class Meta:
         db_table = 'user_profile'
 
     def __str__(self):
         return f"{self.user.username} - {self.user.email} - {self.phone}"
+
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        return 'https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png'
 
 
 

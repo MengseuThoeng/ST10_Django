@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'store.apps.StoreConfig',
     'rest_framework',
+    'djoser',
     'store',
 ]
 
@@ -177,3 +178,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DJOSER= {
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create_password_retype': 'store.serializers.UserCreateSerializer',
+        'user' : 'store.serializers.UserCreateSerializer',
+        'current_user' : 'store.serializers.UserCreateSerializer',
+    },
+}

@@ -3,3 +3,4 @@ djangorestframework~=3.16.0
 faker~=37.1.0
 mysqlclient
 drf-nested-routers~=0.94.2
+djoser

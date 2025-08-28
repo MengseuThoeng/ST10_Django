@@ -7,7 +7,7 @@ from store.forms import UserProfileAdminForm
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     form = UserProfileAdminForm
-    list_display = ('user', 'phone', 'address', 'city', 'state', 'zipcode')
+    list_display = ('user', 'phone', 'address', 'city', 'state', 'zipcode','avatar')
     list_editable = ('phone', 'address', 'city', 'state', 'zipcode')
 
 
@@ -64,4 +64,3 @@ class ProductsAdmin(admin.ModelAdmin):
         return "No categories"
 
     get_categories.short_description = 'Categories'
-
