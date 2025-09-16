@@ -15,26 +15,22 @@ class IsAdminOrReadOnly(BasePermission):
     - Unauthenticated users: No access
     """
     def has_permission(self, request, view):
-        # Must be authenticated
         if not request.user.is_authenticated:
             return False
         
-        # Admin can do everything
         if request.user.is_staff or request.user.is_superuser:
             return True
         
-        # Regular users can only read (GET, HEAD, OPTIONS)
         if request.method in ['GET', 'HEAD', 'OPTIONS']:
             return True
         
-        # Block all write operations for regular users
         return False
 
 
 class PaymentViewSet(ModelViewSet):
     queryset = Payment.objects.all()  # <--- add this!
     serializer_class = PaymentSerializer
-    permission_classes = [IsAdminOrReadOnly]  # JWT + Admin/User permissions
+    permission_classes = [IsAdminOrReadOnly]  
 
     def get_queryset(self):
         return Payment.objects.filter(order_id=self.kwargs['order_pk'])
@@ -46,7 +42,7 @@ class PaymentViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     queryset = Products.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAdminOrReadOnly]  # JWT + Admin/User permissions
+    permission_classes = [IsAdminOrReadOnly]  
 
     def get_queryset(self):
         # 1. For nested router: /categories/<category_pk>/products/
@@ -71,13 +67,13 @@ class CategoryViewSet(ModelViewSet):
         product_count=Count('products')
     )
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly]  # JWT + Admin/User permissions
+    permission_classes = [IsAdminOrReadOnly]  
 
 
 class OrderViewSet(ModelViewSet):
     queryset = Orders.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAdminOrReadOnly]  # JWT + Admin/User permissions
+    permission_classes = [IsAdminOrReadOnly]  
 
 # Second Short
 # class ProductList(ListCreateAPIView):
