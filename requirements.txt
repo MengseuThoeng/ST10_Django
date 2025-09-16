@@ -1,5 +1,6 @@
 django~=5.1.7
 djangorestframework~=3.16.0
+djangorestframework-simplejwt
 faker~=37.1.0
 mysqlclient
 drf-nested-routers~=0.94.2

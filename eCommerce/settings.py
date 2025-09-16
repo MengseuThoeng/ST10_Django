@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+from pathlib import Path
+from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'store.apps.StoreConfig',
     'rest_framework',
+    'rest_framework_simplejwt',
     'djoser',
     'store',
 ]
@@ -132,6 +136,9 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 5,
 }
@@ -178,11 +185,23 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DJOSER= {
+
+# JWT Configuration for Access + Refresh Tokens
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Access token expires in 30 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token expires in 7 days
+    'ROTATE_REFRESH_TOKENS': True,                   # Generate new refresh token on refresh
+    'BLACKLIST_AFTER_ROTATION': True,               # Blacklist old refresh tokens
+}
+
+# Djoser Configuration for JWT
+DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
+    'SEND_ACTIVATION_EMAIL': False,
+    'LOGIN_FIELD': 'email',  # Allow login with email
     'SERIALIZERS': {
         'user_create_password_retype': 'store.serializers.UserCreateSerializer',
-        'user' : 'store.serializers.UserCreateSerializer',
-        'current_user' : 'store.serializers.UserCreateSerializer',
+        'user': 'store.serializers.UserCreateSerializer',
+        'current_user': 'store.serializers.UserCreateSerializer',
     },
 }
