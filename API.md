@@ -1,6 +1,6 @@
 # API Endpoints Documentation
 
-This document lists all available API endpoints for the eCommerce Django project, including the fields for each model and example requests for testing.
+This document lists all available API endpoints for the eCommerce Django project, including the fields for each model, example requests, and sample JSON payloads for testing.
 
 ---
 
@@ -33,7 +33,7 @@ This document lists all available API endpoints for the eCommerce Django project
   - List: `GET /api/v1/categories/`
   - Detail: `GET /api/v1/categories/{id}/`
   - Create: `POST /api/v1/categories/`
-  - Update: `PUT /api/v1/categories/{id}/`
+
   - Delete: `DELETE /api/v1/categories/{id}/`
 
 ---
@@ -89,3 +89,101 @@ curl -X POST http://localhost:8000/api/v1/auth/jwt/create/ \
 - All endpoints require JWT authentication except registration and login.
 - Admin users have full access (CRUD). Regular users have read-only access.
 - Use `/api/v1/` as the base path for all endpoints.
+
+---
+
+# Example JSON Payloads for Requests
+
+## Register User (POST /api/v1/auth/users/)
+```json
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "password": "yourpassword",
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone": "123456789",
+  "address": "123 Main St",
+  "city": "Phnom Penh",
+  "state": "Phnom Penh",
+  "zipcode": "12000"
+}
+```
+
+## Category
+- Create (POST /api/v1/categories/)
+```json
+{
+  "name": "Electronics",
+  "description": "Devices and gadgets."
+}
+```
+- Update (PUT /api/v1/categories/1/)
+```json
+{
+  "name": "Electronics & Gadgets",
+  "description": "All electronic devices and gadgets."
+}
+```
+
+## Product
+- Create (POST /api/v1/products/)
+```json
+{
+  "name": "Smartphone",
+  "price": 299.99,
+  "qty": 50,
+  "is_delete": false,
+  "categories": [1, 2]
+}
+```
+- Update (PUT /api/v1/products/1/)
+```json
+{
+  "name": "Smartphone Pro",
+  "price": 399.99,
+  "qty": 40,
+  "is_delete": false,
+  "categories": [1]
+}
+```
+
+## Order
+- Create (POST /api/v1/orders/)
+```json
+{
+  "qty": 2,
+  "is_deleted": false,
+  "product": 1,
+  "status": "Pending"
+}
+```
+- Update (PUT /api/v1/orders/1/)
+```json
+{
+  "qty": 3,
+  "is_deleted": false,
+  "product": 1,
+  "status": "Completed"
+}
+```
+
+## Payment
+- Create (POST /api/v1/orders/{order_pk}/payments/)
+```json
+{
+  "method": "Credit Card",
+  "amount": 599.98,
+  "is_paid": true,
+  "paid_at": "2025-09-16T10:00:00Z"
+}
+```
+- Update (PUT /api/v1/orders/{order_pk}/payments/1/)
+```json
+{
+  "method": "ABA Pay",
+  "amount": 599.98,
+  "is_paid": true,
+  "paid_at": "2025-09-16T12:00:00Z"
+}
+```
