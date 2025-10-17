@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from store.models import Orders, Products, Category, UserProfile
+from store.models import Orders, Products, Category, UserProfile, Post
 from store.forms import UserProfileAdminForm
 
 
@@ -64,3 +64,13 @@ class ProductsAdmin(admin.ModelAdmin):
         return "No categories"
 
     get_categories.short_description = 'Categories'
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'created_by', 'created_at', 'is_published')
+    list_filter = ('is_published', 'created_at', 'created_by')
+    search_fields = ('title', 'content', 'created_by__username')
+    readonly_fields = ('created_at', 'updated_at')
+    list_per_page = 20
+

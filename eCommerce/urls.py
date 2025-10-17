@@ -17,12 +17,13 @@ Including another URLconf
 import djoser
 from django.contrib import admin
 from django.urls import path, include
+from store import views as store_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('store.routes')),
-
-
     path('api/v1/auth/', include('djoser.urls')),
     path('api/v1/auth/', include('djoser.urls.jwt')),
+    # Activation endpoint that accepts uid and token from URL
+    path('api/v1/auth/users/activation/<uid>/<token>/', store_views.activate_user, name='user-activation'),
 ]

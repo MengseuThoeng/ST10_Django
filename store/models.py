@@ -83,3 +83,22 @@ class Payment(models.Model):
     def __str__(self):
         return f"Payment for Order #{self.order.id} - ${self.amount} - {self.method}"
 
+
+class Post(models.Model):
+    """
+    Example model where each user can only see their own posts
+    """
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'post'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} by {self.created_by.username}"
+

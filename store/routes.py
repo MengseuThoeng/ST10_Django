@@ -7,6 +7,7 @@ router = DefaultRouter()
 router.register('products', views.ProductViewSet)
 router.register('categories', views.CategoryViewSet)
 router.register('orders', views.OrderViewSet)
+router.register('posts', views.PostViewSet, basename='posts')
 # router.register('reviews', views.ReviewViewSet)
 
 payment_router = NestedDefaultRouter(router, 'orders', lookup='order')
@@ -15,7 +16,9 @@ payment_router.register('payments', views.PaymentViewSet)
 category_products_router = NestedDefaultRouter(router, 'categories', lookup='category')
 category_products_router.register('products', views.ProductViewSet, basename='category-products')
 
-urlpatterns = router.urls + payment_router.urls + category_products_router.urls
+urlpatterns = router.urls + payment_router.urls + category_products_router.urls + [
+    path('users/me/', views.get_current_user, name='current-user'),
+]
 
 
 

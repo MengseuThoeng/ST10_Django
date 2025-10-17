@@ -14,6 +14,9 @@ This document lists all available API endpoints for the eCommerce Django project
   - Fields: `token`
 - **Register:** `POST /api/v1/auth/users/`
   - Fields: `username`, `email`, `password`, `first_name`, `last_name`, `phone`, `address`, `city`, `state`, `zipcode`
+- **Get Current User:** `GET /api/v1/users/me/`
+  - Returns current user info based on JWT token
+  - Requires: Valid JWT token in Authorization header
 
 ---
 
@@ -78,11 +81,31 @@ This document lists all available API endpoints for the eCommerce Django project
 
 ---
 
+## Posts (User-Specific Data)
+- **Model:** `Post`
+- **Fields:**
+  - `id`, `title`, `content`, `created_by`, `created_by_username`, `created_at`, `updated_at`, `is_published`
+- **Endpoints:**
+  - List: `GET /api/v1/posts/` (returns only current user's posts, admins see all)
+  - Detail: `GET /api/v1/posts/{id}/` (only if owned by user or user is admin)
+  - Create: `POST /api/v1/posts/`
+  - Update: `PUT /api/v1/posts/{id}/` (only own posts)
+  - Delete: `DELETE /api/v1/posts/{id}/` (only own posts)
+- **Note:** Users automatically see only their own posts. Admins can see all posts.
+
+---
+
 ## Example JWT Auth Request
 ```bash
 curl -X POST http://localhost:8000/api/v1/auth/jwt/create/ \
   -H "Content-Type: application/json" \
   -d '{"email": "your_email@example.com", "password": "your_password"}'
+```
+
+## Get Current User Info
+```bash
+curl -X GET http://localhost:8000/api/v1/users/me/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 ## Notes
@@ -187,3 +210,22 @@ curl -X POST http://localhost:8000/api/v1/auth/jwt/create/ \
   "paid_at": "2025-09-16T12:00:00Z"
 }
 ```
+
+## Post (User-Specific)
+- Create (POST /api/v1/posts/)
+```json
+{
+  "title": "My First Post",
+  "content": "This is the content of my post.",
+  "is_published": true
+}
+```
+- Update (PUT /api/v1/posts/1/)
+```json
+{
+  "title": "Updated Post Title",
+  "content": "Updated content for my post.",
+  "is_published": true
+}
+```
+

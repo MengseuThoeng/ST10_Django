@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from store.models import Category, Products, Orders, Payment, UserProfile
+from store.models import Category, Products, Orders, Payment, UserProfile, Post
 from djoser.serializers import UserCreateSerializer as BaseUserSerializer
 from django.contrib.auth import get_user_model
 
@@ -48,6 +48,19 @@ class UserCreateSerializer(BaseUserSerializer):
 #         fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', read_only=True)
+    last_name = serializers.CharField(source='user.last_name', read_only=True)
+    is_staff = serializers.BooleanField(source='user.is_staff', read_only=True)
+    
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 
+                  'address', 'phone', 'city', 'state', 'zipcode', 'avatar')
+
+
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
@@ -84,6 +97,17 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Products
         fields = ('id', 'name', 'price', 'qty', 'is_delete', 'created_date', 'categories', 'order_count')
+
+
+class PostSerializer(serializers.ModelSerializer):
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'content', 'created_by', 'created_by_username', 'created_at', 'updated_at', 'is_published')
+        read_only_fields = ('created_by', 'created_at', 'updated_at')
+
 
 # Serializer
 # class ProductSerializer(serializers.Serializer):
