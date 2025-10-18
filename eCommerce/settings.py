@@ -201,9 +201,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mengseu2004@gmail.com'
-EMAIL_HOST_PASSWORD = 'rrxb dspc rnid rhqq'  # Gmail app password
-DEFAULT_FROM_EMAIL = 'mengseu2004@gmail.com'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''  # Gmail app password
+DEFAULT_FROM_EMAIL = ''
 
 # Djoser Configuration for JWT and email verification
 DJOSER = {
